@@ -12,7 +12,7 @@ HEADERS = {
 
 def getHTML(url):
     try:
-        with open('html.txt','w',encoding='utf-8') as f:
+        with open('portal.txt','w',encoding='utf-8') as f:
             f.write(requests.get(url, headers=HEADERS).text)
         print("html write OK")
     except:
@@ -26,7 +26,7 @@ def parse() :
     :param html_content: html源代码内容
     :return:
     """
-    with open('dict.txt','w', encoding='utf-8') as f:
+    with open('out.txt','w', encoding='utf-8') as f:
         soup = BeautifulSoup(open('html.txt', encoding='utf-8'), "lxml")
     
         divs=soup.find_all('div',attrs={'data-tag': 'module'})
@@ -43,8 +43,6 @@ def parse() :
             
             trs=div.find_all('tr')
             jump=0
-            ee_to_write:str='-'
-            yy_to_write:str='-'
             for tr in trs:
                 tds=tr.find_all('td')
                 if len(tds) ==1:
@@ -57,13 +55,13 @@ def parse() :
                         e=Emperor
                         y=year
                     if i == e :
-                        ee_to_write=td.text
-                        
+                        f.write(td.text)
+                        f.write(':')
+                        #print(td.text)
                     elif i == y:
-                        yy_to_write=td.text
-                        
-                if yy_to_write !='-':
-                    f.write(ee_to_write+':'+yy_to_write+'\n')
+                        f.write(td.text)
+                        #print(td.text)
+
                 # 确保 tds 列表不为空
                 if len(tds) > 0 and jump<=0:
                     # 安全地获取 rowspan 属性，使用 get 防止 KeyError
@@ -72,11 +70,13 @@ def parse() :
                     if rowspan:  # 如果有 rowspan 属性
                         jump = int(rowspan)
                 jump-=1
+                f.write('\n')
 
     print("读入完成")
 
 if __name__ == '__main__':
-    if not os.path.exists('html.txt'):
-        getHTML(URL)
+    # if not os.path.exists('html.txt'):
+    #     getHTML(URL)
         
-    parse()
+    # parse()
+    getHTML('https://portal.pku.edu.cn/portal2017/#/index')
